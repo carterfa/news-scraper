@@ -1,0 +1,26 @@
+{
+  "name": "news-scraper",
+  "version": "1.0.0",
+  "description": "Upon visiting bamazon, the user can buy a number of products.  Based on available stock in the database, the user will see that their order completed or they will need to adjust their order.  The user will not be able to send an empty order. If not enough stock is in the database, the user will be notified and only the items that are in stock will go through.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carterfa/news-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/carterfa/news-scraper/issues"
+  },
+  "homepage": "https://github.com/carterfa/news-scraper#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "mongoose": "^5.8.0"
+  }
+}
