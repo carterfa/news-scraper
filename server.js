@@ -1,8 +1,6 @@
 // Dependencies
 var express = require("express");
 var mongoose = require("mongoose");
-var cheerio = require("cheerio");
-var axios = require("axios");
 
 // Database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
@@ -20,26 +18,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Routes
-//require("./routes/api-routes.js")(app);
+require("./routes/routes.js")(app);
 //require("./routes/html-routes.js")(app);
 
-//Grab headlines
-axios.get("https://apnews.com/apf-topnews").then(function (response) {
-
-    var $ = cheerio.load(response.data);
-
-    var results = [];
-
-    $("div.CardHeadline h1").each(function (i, element) {
-        let headline = $(element).text();
-        results.push(headline);
-    });
-
-    console.log(results);
-
-})
-
-//Turn on server
+// Turn on server
 app.listen(PORT, function () {
     console.log("App listening on http://localhost:" + PORT);
 });
