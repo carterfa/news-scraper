@@ -13,6 +13,12 @@ var ArticleSchema = new Schema({
         unique: true
     },
 
+    summary: {
+        type: String,
+        trim: true,
+        required: true
+    },
+
     link: {
         type: String,
         trim: true,

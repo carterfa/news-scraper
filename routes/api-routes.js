@@ -1,14 +1,9 @@
-var db = require("./models");
+var db = require("../models");
 var cheerio = require("cheerio");
 var axios = require("axios");
 
 
 module.exports = function (app) {
-
-    //Home Page
-    app.get("/", function (req, res) {
-        res.send("Hello");
-    });
 
     //Grabs all articles from the database
     app.get("/articles", function (req, res) {
@@ -62,9 +57,10 @@ module.exports = function (app) {
 
             var $ = cheerio.load(response.data);
 
-            //Goes to each card; grabs headline and link
-            $("div.CardHeadline").each(function (i, element) {
+            //Goes to each card; grabs headline, summary, and link
+            $("div.FeedCard").each(function (i, element) {
                 let headline = $(element).find("h1").text();
+                let summary = $(element).find("div.content").text();
                 let link = $(element).find("a").attr("href");
                 let date = new Date($(element).find("span.Timestamp").data("source"));
 
@@ -76,9 +72,12 @@ module.exports = function (app) {
 
                 let result = {
                     "headline": headline,
+                    "summary": summary,
                     "link": link,
                     "date": date
                 };
+
+                //console.log(result);
 
                 //Creates new article
                 db.Article.create(result)
