@@ -18,8 +18,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Routes
-require("./routes/routes.js")(app);
-//require("./routes/html-routes.js")(app);
+require("./routes.js")(app);
 
 // Turn on server
 app.listen(PORT, function () {

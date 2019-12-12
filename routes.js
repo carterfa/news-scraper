@@ -1,4 +1,4 @@
-var db = require("../models");
+var db = require("./models");
 var cheerio = require("cheerio");
 var axios = require("axios");
 
@@ -11,9 +11,9 @@ module.exports = function (app) {
     });
 
     //Grabs all articles from the database
-    app.get("/all", function (req, res) {
+    app.get("/articles", function (req, res) {
 
-        db.Article.find({})
+        db.Article.find({}).sort({ date: -1 })
             .then(function (dbArticle) {
 
                 res.json(dbArticle);
@@ -23,6 +23,37 @@ module.exports = function (app) {
                 res.json(err);
             });
 
+    });
+
+    //Displays single article with post
+    app.get("/articles/:id", function (req, res) {
+        db.Article.find({ _id: req.params.id })
+            .populate("posts")
+            .then(function (dbArticle) {
+
+                res.json(dbArticle);
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
+    });
+
+    // Adds new post to article
+    app.post("/articles/:id", function (req, res) {
+        console.log(req.body)
+        db.Post.create(req.body)
+            .then(function (dbPost) {
+                return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { posts: dbPost._id } }, { new: true });
+            })
+            .then(function (dbArticle) {
+
+                res.json(dbArticle);
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
     });
 
     //Grabs headlines from AP News
@@ -68,5 +99,7 @@ module.exports = function (app) {
         });
 
     });
+
+
 
 };
