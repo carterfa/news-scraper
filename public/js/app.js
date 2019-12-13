@@ -60,16 +60,17 @@ $(document).ready(function () {
         articleId = $(this).val();
         $("#postContent").empty();
         $("#postView").show();
+        $("#postViewTitle").text($("#head-" + articleId).text());
 
         //Runs get route
         $.get("/articles/" + articleId, function (data) {
             if (!data[0].posts.length) {
-                const postCard = `<div class="postCard"><h2>No comments have been posted.</h2>`
+                const postCard = `<div class="postCard"><h6>No comments have been posted.</h6>`
                 $("#postContent").append(postCard);
             } else {
                 for (let i = 0; i < data[0].posts.length; i++) {
                     const postCard =
-                        `<div class="postCard"><h2>${data[0].posts[i].title}</h2>
+                        `<div class="postCard"><h6>${data[0].posts[i].title}</h6>
                     <p>${data[0].posts[i].body}</p></div>`
                     $("#postContent").append(postCard);
                 }
