@@ -32,7 +32,7 @@ $(document).ready(function () {
 
             const headlineCard = `<div class="headlineCard">
             <a href="${data[i].link}">
-            <h2>${data[i].headline}</h2></a>
+            <h2 id="head-${data[i]._id}">${data[i].headline}</h2></a>
             <p>${data[i].summary}</p>
             <button value="${data[i]._id}" class="btn btn-secondary viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
             <button value="${data[i]._id}" class="btn btn-success newPost">POST COMMENT</button>
@@ -49,7 +49,7 @@ $(document).ready(function () {
     $(document).on("click", ".newPost", function (event) {
         event.preventDefault();
         articleId = $(this).val();
-
+        $("#postFormTitle").text($("#head-" + articleId).text());
         $("#postForm").show();
 
     });
