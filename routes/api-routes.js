@@ -83,7 +83,7 @@ module.exports = function (app) {
                 db.Article.create(result)
                     .then(function (dbArticle) {
                         // Display article
-                        console.log(dbArticle);
+                        //console.log(dbArticle);
                     })
                     .catch(function (err) {
                         // Error
@@ -91,7 +91,7 @@ module.exports = function (app) {
                     });
             });
 
-            res.send("Scrape complete.")
+            res.end();
 
         }).catch(function (err) {
             res.send(err);
@@ -100,13 +100,21 @@ module.exports = function (app) {
     });
 
 
-    //Deletes all articles from the database
+    //Deletes all articles and posts from the database
     app.delete("/articles", function (req, res) {
 
         db.Article.deleteMany({})
             .then(function () {
 
-                res.send("All articles deleted!");
+                db.Post.deleteMany({})
+                    .then(function () {
+
+                        res.end();
+                    })
+                    .catch(function (err) {
+
+                        res.json(err);
+                    });
             })
             .catch(function (err) {
 

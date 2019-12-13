@@ -16,7 +16,6 @@ var ArticleSchema = new Schema({
     summary: {
         type: String,
         trim: true,
-        required: true
     },
 
     link: {

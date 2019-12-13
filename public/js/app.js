@@ -18,7 +18,9 @@ $(document).ready(function () {
             <h2>${data[i].headline}</h2></a>
             <p>${data[i].summary}</p>
             <button value="${data[i]._id}" class="viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
-            <button value="${data[i]._id}" class="newPost">POST COMMENT</button></div>`
+            <button value="${data[i]._id}" class="newPost">POST COMMENT</button>
+            <button value="${data[i]._id}" class="faveArticle">FAVORITE</button>
+            </div>`
             $("#content").append(headlineCard);
         }
     };
@@ -39,13 +41,19 @@ $(document).ready(function () {
         $("#postContent").empty();
         $("#postView").show();
 
+        //Runs get route
         $.get("/articles/" + articleId, function (data) {
-            for (let i = 0; i < data[0].posts.length; i++) {
-                const postCard = `<div class="postCard"><h2>${data[0].posts[i].title}</h2></a>
-                <p>${data[0].posts[i].body}</p></div>`
-
-
+            if (!data[0].posts.length) {
+                const postCard = `<div class="postCard"><h2>No comments have been posted.</h2>`
                 $("#postContent").append(postCard);
+            } else {
+                for (let i = 0; i < data[0].posts.length; i++) {
+                    const postCard =
+                        `<div class="postCard"><h2>${data[0].posts[i].title}</h2>
+                    <p>${data[0].posts[i].body}</p></div>`
+                    $("#postContent").append(postCard);
+                }
+
             };
         });
 
@@ -71,6 +79,7 @@ $(document).ready(function () {
 
     })
 
+    //Deletes all articles and posts
     $("#deleteAll").on("click", function (event) {
         event.preventDefault();
         $.ajax({
@@ -78,13 +87,10 @@ $(document).ready(function () {
             type: 'DELETE',
         }).then(function (err) {
             if (err) throw err;
-            getArticleData();
+            $("#content").empty();
         });
 
     })
-
-
-
 
     //Closes post view
     $("#closePostView").on("click", function (event) {
