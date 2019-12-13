@@ -20,6 +20,21 @@ module.exports = function (app) {
 
     });
 
+    //Grabs all favorites from the database
+    app.get("/articles/saved", function (req, res) {
+
+        db.Article.find({ favorite: true }).sort({ date: -1 })
+            .then(function (dbArticle) {
+
+                res.json(dbArticle);
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
+
+    });
+
     //Displays single article with posts
     app.get("/articles/:id", function (req, res) {
         db.Article.find({ _id: req.params.id })
@@ -44,6 +59,23 @@ module.exports = function (app) {
             .then(function (dbArticle) {
 
                 res.json(dbArticle);
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
+    });
+
+
+    // Toggles favorite state
+    app.put("/articles/:id", function (req, res) {
+
+        console.log(req.body);
+        db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true })
+            .then(function (dbArticle) {
+
+                res.json(dbArticle);
+
             })
             .catch(function (err) {
 

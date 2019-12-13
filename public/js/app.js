@@ -9,20 +9,40 @@ $(document).ready(function () {
         });
     }
 
+    //Get favorites from database
+    function getFaveData() {
+        $.get("/articles/saved", function (data) {
+            displayArticles(data);
+        });
+    }
+
     //Display articles
     function displayArticles(data) {
         $("#content").empty();
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < 10; i++) {
+
+            let faveBtn = "";
+
+            if (!data[i].favorite) {
+                faveBtn = `<button value="${data[i]._id}" class="btn btn-warning faveArticle">SAVE</button>`;
+            }
+            else {
+                faveBtn = `<button value="${data[i]._id}" class="btn btn-warning faveArticle">REMOVE FROM SAVED</button>`;
+            }
+
             const headlineCard = `<div class="headlineCard">
             <a href="${data[i].link}">
             <h2>${data[i].headline}</h2></a>
             <p>${data[i].summary}</p>
-            <button value="${data[i]._id}" class="viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
-            <button value="${data[i]._id}" class="newPost">POST COMMENT</button>
-            <button value="${data[i]._id}" class="faveArticle">FAVORITE</button>
+            <button value="${data[i]._id}" class="btn btn-secondary viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
+            <button value="${data[i]._id}" class="btn btn-success newPost">POST COMMENT</button>
+            ${faveBtn}
             </div>`
             $("#content").append(headlineCard);
-        }
+
+
+        };
+
     };
 
     //Grabs article id and displays submission form
@@ -59,6 +79,32 @@ $(document).ready(function () {
 
     });
 
+    //Favorites article
+    $(document).on("click", ".faveArticle", function (event) {
+        event.preventDefault();
+        articleId = $(this).val();
+        let state = true;
+
+        if ($(this).text() === "REMOVE FROM SAVED") {
+            state = false;
+            $(this).text("SAVE")
+        } else {
+            $(this).text("REMOVE FROM SAVED")
+        }
+
+        $.ajax({
+            url: '/articles/' + articleId,
+            type: 'PUT',
+            data: { favorite: state }
+        }).then(function (data, err) {
+            if (err) throw err;
+            alert("End");
+        });
+
+
+
+    });
+
     //Adds post to article
     $("#submitPost").on("click", function (event) {
         event.preventDefault();
@@ -70,6 +116,7 @@ $(document).ready(function () {
     //Grabs new articles
     $("#scrape").on("click", function (event) {
         event.preventDefault();
+        $(this).text("SHOW SAVED ARTICLES");
         $.get("/scrape", function (data) {
 
         }).then(function (err) {
@@ -89,6 +136,21 @@ $(document).ready(function () {
             if (err) throw err;
             $("#content").empty();
         });
+
+    })
+
+    //Filters favorite articles
+    $("#faveAll").on("click", function (event) {
+        event.preventDefault();
+
+        if ($(this).text() === "SHOW SAVED ARTICLES") {
+            getFaveData();
+            $(this).text("SHOW ALL ARTICLES")
+        } else {
+            $(this).text("SHOW SAVED ARTICLES")
+            getArticleData();
+        }
+
 
     })
 
