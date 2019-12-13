@@ -1,25 +1,107 @@
 $(document).ready(function () {
 
-    $.get("/articles", function (data) {
-        displayArticles(data);
-    });
+    let articleId = "";
 
+    //Get articles from database
+    function getArticleData() {
+        $.get("/articles", function (data) {
+            displayArticles(data);
+        });
+    }
+
+    //Display articles
     function displayArticles(data) {
-        for (let i = 0; i < 5; i++) {
+        $("#content").empty();
+        for (let i = 0; i < data.length; i++) {
             const headlineCard = `<div class="headlineCard">
             <a href="${data[i].link}">
             <h2>${data[i].headline}</h2></a>
             <p>${data[i].summary}</p>
-            <button id="viewPosts">VIEW COMMENTS (${data[i].posts.length})</button><button value="${data[i]._id}" id="newPost">NEW COMMENT</button></div>`
+            <button value="${data[i]._id}" class="viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
+            <button value="${data[i]._id}" class="newPost">POST COMMENT</button></div>`
             $("#content").append(headlineCard);
         }
     };
 
-    $(document).on("click", "#newPost", function (event) {
+    //Grabs article id and displays submission form
+    $(document).on("click", ".newPost", function (event) {
         event.preventDefault();
-        var articleId = $(this).val();
+        articleId = $(this).val();
 
-        $.post("/articles/" + articleId, { title: "What", body: "I'm confused." });
+        $("#postForm").show();
+
     });
+
+    //Displays posts from specific article
+    $(document).on("click", ".viewPosts", function (event) {
+        event.preventDefault();
+        articleId = $(this).val();
+        $("#postContent").empty();
+        $("#postView").show();
+
+        $.get("/articles/" + articleId, function (data) {
+            for (let i = 0; i < data[0].posts.length; i++) {
+                const postCard = `<div class="postCard"><h2>${data[0].posts[i].title}</h2></a>
+                <p>${data[0].posts[i].body}</p></div>`
+
+
+                $("#postContent").append(postCard);
+            };
+        });
+
+    });
+
+    //Adds post to article
+    $("#submitPost").on("click", function (event) {
+        event.preventDefault();
+        $.post("/articles/" + articleId, { title: $("#postTitle").val(), body: $("#postBody").val() });
+        $("#postForm").hide();
+        getArticleData();
+    })
+
+    //Grabs new articles
+    $("#scrape").on("click", function (event) {
+        event.preventDefault();
+        $.get("/scrape", function (data) {
+
+        }).then(function (err) {
+            if (err) throw err;
+            getArticleData();
+        });
+
+    })
+
+    $("#deleteAll").on("click", function (event) {
+        event.preventDefault();
+        $.ajax({
+            url: '/articles',
+            type: 'DELETE',
+        }).then(function (err) {
+            if (err) throw err;
+            getArticleData();
+        });
+
+    })
+
+
+
+
+    //Closes post view
+    $("#closePostView").on("click", function (event) {
+        event.preventDefault();
+        $("#postView").hide();
+
+    })
+
+    //Closes post form
+    $("#closePostForm").on("click", function (event) {
+        event.preventDefault();
+        $("#postForm").hide();
+
+    })
+
+    getArticleData();
+    $("#postForm").hide();
+    $("#postView").hide();
 
 });

@@ -20,7 +20,7 @@ module.exports = function (app) {
 
     });
 
-    //Displays single article with post
+    //Displays single article with posts
     app.get("/articles/:id", function (req, res) {
         db.Article.find({ _id: req.params.id })
             .populate("posts")
@@ -96,6 +96,22 @@ module.exports = function (app) {
         }).catch(function (err) {
             res.send(err);
         });
+
+    });
+
+
+    //Deletes all articles from the database
+    app.delete("/articles", function (req, res) {
+
+        db.Article.deleteMany({})
+            .then(function () {
+
+                res.send("All articles deleted!");
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
 
     });
 

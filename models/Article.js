@@ -30,6 +30,11 @@ var ArticleSchema = new Schema({
         default: Date.now
     },
 
+    favorite: {
+        type: Boolean,
+        default: false
+    },
+
     //Creates relationship with posts
     posts: [
         {
