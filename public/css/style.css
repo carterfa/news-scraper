@@ -1,0 +1,24 @@
+body{
+    background-color: whitesmoke;
+}
+
+footer, header{
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+a, .btnrow, p{
+    display: block;
+}
+
+.container {
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row{
+    margin-bottom: 2em;
+}

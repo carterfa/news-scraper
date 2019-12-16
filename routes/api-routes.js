@@ -134,8 +134,8 @@ module.exports = function (app) {
     //Delete specific post
     app.put("/api/posts", function (req, res) {
 
-        console.log(req.body.postId);
-        console.log(req.body.articleId);
+        //console.log(req.body.postId);
+        //console.log(req.body.articleId);
 
         db.Article.findOneAndUpdate({ _id: req.body.articleId }, { $pull: { posts: req.body.postId } }, { new: true })
             .then(function () {

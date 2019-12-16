@@ -19,7 +19,7 @@ $(document).ready(function () {
     //Display articles
     function displayArticles(data) {
         $("#content").empty();
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < data.length; i++) {
 
             let faveBtn = "";
 
@@ -30,13 +30,13 @@ $(document).ready(function () {
                 faveBtn = `<button value="${data[i]._id}" class="btn btn-warning faveArticle">REMOVE FROM SAVED</button>`;
             }
 
-            const headlineCard = `<div class="headlineCard">
+            const headlineCard = `<div class="row headlineCard">
             <a href="${data[i].link}">
-            <h2 id="head-${data[i]._id}">${data[i].headline}</h2></a>
+            <h3 id="head-${data[i]._id}">${data[i].headline}</h3></a>
             <p>${data[i].summary}</p>
-            <button value="${data[i]._id}" class="btn btn-secondary viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
+            <div class="btnrow"><button value="${data[i]._id}" class="btn btn-secondary viewPosts" >VIEW COMMENTS (${data[i].posts.length})</button>
             <button value="${data[i]._id}" class="btn btn-success newPost">POST COMMENT</button>
-            ${faveBtn}
+            ${faveBtn}</div>
             </div>`
             $("#content").append(headlineCard);
 
