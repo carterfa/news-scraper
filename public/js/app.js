@@ -4,14 +4,14 @@ $(document).ready(function () {
 
     //Get articles from database
     function getArticleData() {
-        $.get("/articles", function (data) {
+        $.get("/api/articles", function (data) {
             displayArticles(data);
         });
     }
 
     //Get favorites from database
     function getFaveData() {
-        $.get("/articles/saved", function (data) {
+        $.get("/api/articles/saved", function (data) {
             displayArticles(data);
         });
     }
@@ -45,6 +45,33 @@ $(document).ready(function () {
 
     };
 
+    //Displays all posts associated with article
+    function displayPosts(articleId) {
+
+        $("#postContent").empty();
+        $("#postView").show();
+        $("#postViewTitle").text($("#head-" + articleId).text());
+
+        //Runs get route
+        $.get("/api/articles/" + articleId, function (data) {
+
+            let xPost = data[0].posts;
+            if (!xPost.length) {
+                const postCard = `<div class="postCard"><h6>No comments have been posted.</h6>`
+                $("#postContent").append(postCard);
+            } else {
+                for (let i = 0; i < xPost.length; i++) {
+                    const postCard =
+                        `<div class="postCard" id="post-${xPost[i]._id}"><h6>${xPost[i].title}</h6>
+                    <p>${xPost[i].body}</p><button value="${xPost[i]._id}" class="btn btn-danger deletePost">DELETE POST</button></div>`
+                    $("#postContent").append(postCard);
+                }
+
+            };
+        });
+
+    }
+
     //Grabs article id and displays submission form
     $(document).on("click", ".newPost", function (event) {
         event.preventDefault();
@@ -58,27 +85,31 @@ $(document).ready(function () {
     $(document).on("click", ".viewPosts", function (event) {
         event.preventDefault();
         articleId = $(this).val();
-        $("#postContent").empty();
-        $("#postView").show();
-        $("#postViewTitle").text($("#head-" + articleId).text());
-
-        //Runs get route
-        $.get("/articles/" + articleId, function (data) {
-            if (!data[0].posts.length) {
-                const postCard = `<div class="postCard"><h6>No comments have been posted.</h6>`
-                $("#postContent").append(postCard);
-            } else {
-                for (let i = 0; i < data[0].posts.length; i++) {
-                    const postCard =
-                        `<div class="postCard"><h6>${data[0].posts[i].title}</h6>
-                    <p>${data[0].posts[i].body}</p></div>`
-                    $("#postContent").append(postCard);
-                }
-
-            };
-        });
+        displayPosts(articleId);
 
     });
+
+    //Deletes single post
+    $(document).on("click", ".deletePost", function (event) {
+        event.preventDefault();
+        let postId = $(this).val();
+        console.log(postId);
+
+        $.ajax({
+            url: '/api/posts',
+            type: 'PUT',
+            data: {
+                articleId: articleId,
+                postId: postId
+            }
+        }).then(function (data, err) {
+            if (err) throw err;
+        });
+
+        $("#post-" + postId).remove();
+        getArticleData();
+
+    })
 
     //Favorites article
     $(document).on("click", ".faveArticle", function (event) {
@@ -94,12 +125,11 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: '/articles/' + articleId,
+            url: '/api/articles/' + articleId,
             type: 'PUT',
             data: { favorite: state }
         }).then(function (data, err) {
             if (err) throw err;
-            alert("End");
         });
 
 
@@ -109,16 +139,18 @@ $(document).ready(function () {
     //Adds post to article
     $("#submitPost").on("click", function (event) {
         event.preventDefault();
-        $.post("/articles/" + articleId, { title: $("#postTitle").val(), body: $("#postBody").val() });
-        $("#postForm").hide();
-        getArticleData();
+        if ($("#postTitle").val() && $("#postBody").val()) {
+            $.post("/api/articles/" + articleId, { title: $("#postTitle").val(), body: $("#postBody").val() });
+            $("#postForm").hide();
+            getArticleData();
+        }
     })
 
     //Grabs new articles
     $("#scrape").on("click", function (event) {
         event.preventDefault();
-        $(this).text("SHOW SAVED ARTICLES");
-        $.get("/scrape", function (data) {
+
+        $.get("/api/scrape", function (data) {
 
         }).then(function (err) {
             if (err) throw err;
@@ -131,7 +163,7 @@ $(document).ready(function () {
     $("#deleteAll").on("click", function (event) {
         event.preventDefault();
         $.ajax({
-            url: '/articles',
+            url: '/api/articles',
             type: 'DELETE',
         }).then(function (err) {
             if (err) throw err;

@@ -6,7 +6,7 @@ var axios = require("axios");
 module.exports = function (app) {
 
     //Grabs all articles from the database
-    app.get("/articles", function (req, res) {
+    app.get("/api/articles", function (req, res) {
 
         db.Article.find({}).sort({ date: -1 })
             .then(function (dbArticle) {
@@ -21,7 +21,7 @@ module.exports = function (app) {
     });
 
     //Grabs all favorites from the database
-    app.get("/articles/saved", function (req, res) {
+    app.get("/api/articles/saved", function (req, res) {
 
         db.Article.find({ favorite: true }).sort({ date: -1 })
             .then(function (dbArticle) {
@@ -36,7 +36,7 @@ module.exports = function (app) {
     });
 
     //Displays single article with posts
-    app.get("/articles/:id", function (req, res) {
+    app.get("/api/articles/:id", function (req, res) {
         db.Article.find({ _id: req.params.id })
             .populate("posts")
             .then(function (dbArticle) {
@@ -50,7 +50,7 @@ module.exports = function (app) {
     });
 
     // Adds new post to article
-    app.post("/articles/:id", function (req, res) {
+    app.post("/api/articles/:id", function (req, res) {
         console.log(req.body)
         db.Post.create(req.body)
             .then(function (dbPost) {
@@ -68,9 +68,9 @@ module.exports = function (app) {
 
 
     // Toggles favorite state
-    app.put("/articles/:id", function (req, res) {
+    app.put("/api/articles/:id", function (req, res) {
 
-        console.log(req.body);
+        //console.log(req.body);
         db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true })
             .then(function (dbArticle) {
 
@@ -84,7 +84,7 @@ module.exports = function (app) {
     });
 
     //Grabs headlines from AP News
-    app.get("/scrape", function (req, res) {
+    app.get("/api/scrape", function (req, res) {
         axios.get("https://apnews.com/apf-topnews").then(function (response) {
 
             var $ = cheerio.load(response.data);
@@ -131,9 +131,37 @@ module.exports = function (app) {
 
     });
 
+    //Delete specific post
+    app.put("/api/posts", function (req, res) {
+
+        console.log(req.body.postId);
+        console.log(req.body.articleId);
+
+        db.Article.findOneAndUpdate({ _id: req.body.articleId }, { $pull: { posts: req.body.postId } }, { new: true })
+            .then(function () {
+
+                db.Post.deleteOne({ _id: req.body.postId })
+                    .then(function () {
+
+                        res.end();
+                    })
+                    .catch(function (err) {
+
+                        res.json(err);
+                    });
+
+            })
+            .catch(function (err) {
+
+                res.json(err);
+            });
+
+
+    })
+
 
     //Deletes all articles and posts from the database
-    app.delete("/articles", function (req, res) {
+    app.delete("/api/articles", function (req, res) {
 
         db.Article.deleteMany({})
             .then(function () {
