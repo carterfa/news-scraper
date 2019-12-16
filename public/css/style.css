@@ -7,6 +7,16 @@ footer, header{
     margin-bottom: 2em;
 }
 
+header{
+    border-bottom: solid 2px #ff322e;
+    padding-bottom: 1em;
+}
+
+footer{
+    border-top: solid 2px #ff322e;
+    padding-top: 1em;
+}
+
 a, .btnrow, p{
     display: block;
 }
@@ -19,6 +29,8 @@ a, .btnrow, p{
     margin-left: auto;
 }
 
-.row{
+.row {
     margin-bottom: 2em;
+    border-bottom: solid 2px darkgrey;
+    padding-bottom: 1em;
 }

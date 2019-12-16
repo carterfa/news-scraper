@@ -144,6 +144,9 @@ $(document).ready(function () {
             $("#postForm").hide();
             getArticleData();
         }
+
+        $("#postTitle").val("");
+        $("#postBody").val("");
     })
 
     //Grabs new articles
